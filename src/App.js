@@ -1,9 +1,10 @@
 import React from "react";
 import "./App.css";
-import MovieList from "./MovieList";
-import FavoriteList from "./FavoriteList";
+import AddMovie from "./AddMovie.js";
+import MovieLists from "./MovieLists";
+//import FavoriteMovies from "./FavoriteMovies";
 
-class App extends React.Component {
+export default class App extends React.Component {
   state = {
     movies: [
       {
@@ -14,6 +15,7 @@ class App extends React.Component {
         directorName: "Stephen",
         releaseYear: 2000,
         description: "nicely done",
+        isDeleted: 0,
       },
       {
         id: 2,
@@ -23,6 +25,7 @@ class App extends React.Component {
         directorName: "StephenA",
         releaseYear: 2001,
         description: "nicely done1",
+        isDeleted: 0,
       },
       {
         id: 3,
@@ -32,6 +35,7 @@ class App extends React.Component {
         directorName: "StephenB",
         releaseYear: 2009,
         description: "nicely done2",
+        isDeleted: 0,
       },
       {
         id: 4,
@@ -41,74 +45,88 @@ class App extends React.Component {
         directorName: "StephenC",
         releaseYear: 2020,
         description: "nicely done3",
+        isDeleted: 0,
       },
     ],
-    showMovies: 1,
-    favorites: []
+
+    favorites: [{}]
+
+    //showDetails: true,
   };
 
-  showHide = () => {
-    this.setState({ showMovies: !this.state.showMovies });
+  addMovie = (movie) => {
+    const newMovies = [...this.state.movies];
+    newMovies.push(movie);
+    this.setState({movies: newMovies });
+    console.log(newMovies, 'from app');
   };
 
-addToFavorite =(favorite)=> {
-  const favorites = this.state;
-  if(!favorites.some(alreadyfavorite => alreadyfavorite.id===favorite.id)){
-    this.setState({ favorites: [...favorites, favorite]})
+  updateMovie = (newMovie) => {
+    const newMovies = [...this.state.movies];
+    let index = this.findIndexById(newMovie.id);
+    const updatedMovie = { ...newMovies[index] };
+    updatedMovie.name = newMovie.name;
+    updatedMovie.releaseYear = newMovie.releaseYear;
+    newMovies[index] = updatedMovie;
+    this.setState({ movies:newMovies });
 
+  };
+
+  deleteMovie = (id) => {
+    const newMovies = [...this.state.movies];
+    let index = this.findIndexById(id);
+    const deletedMovie = { ...newMovies[index] };
+    deletedMovie.isDeleted = 1;
+    newMovies[index] = deletedMovie;
+    this.setState({ movies:newMovies });
+  };
+
+  addToFavorite =(id)=> {
+    const newFavorites = [...this.state.favorites];
+    const newMovies = [...this.state.movies];
+    let index = this.findIndexById(id);
+    const favoriteMovie = { ...newMovies[index]}
+    //newFavorites[index] = favoriteMovie;
+    if(!newFavorites.some(alreadyfavorite => alreadyfavorite.id===favoriteMovie.id)){
+      newFavorites.push(favoriteMovie);
+      this.setState({ favorites: newFavorites})
+      }
   }
-}
+ 
 
-  // showDetails = () => {
-  //   this.setState({ showMovies: !this.state.showMovies });
-  // };
+  findIndexById = (id) => {
+    let index = -1;
+    for (let i = 0; i < this.state.movies.length; i++) {
+      if (this.state.movies[i].id === id) {
+        index = i;
+        break;
+      }
+    }
+    return index;
+  };
 
   render() {
-    //const { showMovies, movies } = this.state;
-    const {  movies, favorites } = this.state;
-   
-
-//     const listMovies = movies.map(movie => {
-//            return movie.rating > 5 ? (      
-//         <div>
-//           <p> name: {movie.name}</p>
-//           <p>rating: {movie.rating}</p>
-//           <p>genres: {movie.genres}</p>
-
-//         </div>
-//       ) : null;
-//     });
-
-//     const detailMovie = movies.map(movie => {
-//       return  (      
-//    <div>
-//      <p>name: {movie.name}</p>
-//      <p>rating: {movie.rating}</p>
-//      <p>genres: {movie.genres}</p>
-//      <p>director: {movie.director}</p>
-//      <p>releaseYear: {movie.releaseYear}</p>
-//      <p>description: {movie.description}</p>
-
-//    </div>
-//  ) 
-// });
-
-
-
-
+    const { movies,favorites } = this.state;
+ console.log(movies, 'from render');
     return (
       <div className="App">
-       <MovieList movies={movies} addToFavorite ={this.addToFavorite}/>
-       <FavoriteList favorites ={favorites}/>
-       {/* {showMovies && (<p>{listMovies}</p>)}
-       {showMovies && (<p>{detailMovie}</p>)}
+        <h3> Movies</h3>
 
+        <MovieLists
+          movies={movies}
+          favorites={favorites}
+          updateMovie={this.updateMovie}
+          deleteMovie={this.deleteMovie}
+          addtoFavorite={this.addToFavorite}
+        />
 
-        <button onClick={this.showHide}> ShowHideMovies</button>
-        <button onClick={this.showHide}> Details</button> */}
+        <AddMovie addMovie={this.addMovie} />
+
+        <p> Where is my movies ?</p>
+
+        {/* <FavoriteMovies addToFavorite={this.addToFavorite}/> */}
 
       </div>
     );
   }
 }
-export default App;
