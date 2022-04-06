@@ -1,15 +1,19 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
 
 export default class AddtoFavorite extends Component {
-  render() {
+  
 
+  addFav =() =>{
+    this.props.addtoFavorite(this.props.id)
+  }
+
+
+  render() {
     return (
       <div>
-   
-          {this.props.addToFavorite}
-          <button onClick={this.addToFavorite}> Add to Favorite</button>
-
+        AddtoFavorite
+        <button onClick={this.addFav}>AddtoFavorite</button>
       </div>
-    )
+    );
   }
 }
